@@ -30,7 +30,7 @@ class ProductCreateView(View):
         serializer = ProdukFormSerializer(data=request.POST)
         if serializer.is_valid():
             serializer.save()
-            return redirect('product_list')
+            return redirect('/products/?success=created')
         kategori = Kategori.objects.all()
         status = Status.objects.all()
         return render(request, 'products/product_form.html', {'form': serializer, 'kategori': kategori, 'status': status})
@@ -48,7 +48,7 @@ class ProductUpdateView(View):
         serializer = ProdukFormSerializer(instance=product, data=request.POST)
         if serializer.is_valid():
             serializer.save()
-            return redirect('product_list')
+            return redirect('/products/?success=updated')
         kategori = Kategori.objects.all()
         status = Status.objects.all()
         return render(request, 'products/product_form.html', {'form': serializer, 'kategori': kategori, 'status': status})

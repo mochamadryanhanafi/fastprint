@@ -1,17 +1,26 @@
-version: '3.8'
-
 services:
-  db:
-    image: postgres:13
-    container_name: fastprint-db
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8001:8000"
+    depends_on:
+      - db
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      - DATABASE_URL=postgres://fastprint_user:fastprint_password@db:5432/fastprint_db
+
+  db:
+    image: postgres:13-alpine
+    environment:
+      - POSTGRES_DB=fastprint_db
+      - POSTGRES_USER=fastprint_user
+      - POSTGRES_PASSWORD=fastprint_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
 
 volumes:
   postgres_data:
