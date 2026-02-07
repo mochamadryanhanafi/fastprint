@@ -1,118 +1,314 @@
-# Fastprint Django Test
+# FastPrint - Sistem Manajemen Produk
 
-Proyek ini adalah aplikasi Django yang dibuat untuk tes rekrutmen. Aplikasi ini mengambil data produk dari API eksternal, menyimpannya di database PostgreSQL, dan menyediakan antarmuka web untuk menampilkan, menambah, mengedit, dan menghapus produk. Aplikasi ini dibangun dengan pendekatan arsitektur bersih dan menggunakan UI modern yang responsif.
+Aplikasi web modern untuk manajemen produk dengan UI yang responsif dan estetis. Dibangun dengan Django, PostgreSQL, dan Docker menggunakan prinsip Clean Architecture.
+
+##  Fitur Utama
+
+### 1. **Dashboard Statistik**
+- **Total Produk**: Menampilkan jumlah total produk
+- **Produk Siap Dijual**: Tracking produk dengan status "Bisa dijual"
+- **Total Kategori**: Jumlah kategori produk
+- **Update Terakhir**: Timestamp update data terbaru
+
+### 2. **Manajemen Produk (CRUD)**
+-  **Create**: Tambah produk baru dengan validasi real-time
+-  **Read**: Tampilan tabel (desktop) dan card (mobile)
+-  **Update**: Edit produk dengan konfirmasi modal
+-  **Delete**: Hapus produk dengan konfirmasi modal modern
+
+### 3. **Sistem Filter & Pencarian**
+-  **Search**: Pencarian produk berdasarkan nama
+-  **Filter Kategori**: Filter berdasarkan kategori produk
+-  **Filter Status**: Filter berdasarkan status produk
+-  **Reset Filter**: Tombol reset untuk menghapus semua filter
+
+### 4. **UI/UX Modern**
+-  **Soft Color Palette**: Warna lembut (soft blue & cream)
+-  **Glassmorphism**: Efek kaca frosted pada card
+-  **Responsive Design**: Otomatis menyesuaikan desktop/mobile
+-  **Smooth Animations**: Transisi dan animasi halus
+-  **Toast Notifications**: Feedback visual untuk setiap aksi
+-  **Icon-Only Actions**: Tombol aksi dengan icon saja (lebih compact)
+
+### 5. **Konfirmasi Modal**
+-  **Save Confirmation**: Popup konfirmasi sebelum menyimpan
+-  **Edit Confirmation**: Popup konfirmasi sebelum update
+-  **Delete Confirmation**: Popup konfirmasi sebelum hapus
+- Modern Bootstrap 5 modals dengan animasi fade
+
+### 6. **Validasi Form**
+- Client-side validation dengan feedback real-time
+- Visual indicators (green/red borders)
+- Error messages yang jelas
+- Loading state saat submit
 
 ## Teknologi yang Digunakan
 
-*   **Backend:**
-    *   Python
-    *   Django
-    *   Django Rest Framework
-*   **Frontend:**
-    *   HTML
-    *   Bootstrap 5
-    *   JavaScript
-*   **Database:**
-    *   PostgreSQL
-*   **Kontainerisasi:**
-    *   Docker
-    *   Docker Compose
+### Backend
+- **Python 3.11**
+- **Django 4.2.1** - Web framework
+- **Django REST Framework** - API endpoints
+- **pg8000** - PostgreSQL adapter
 
-## Arsitektur Bersih (Clean Architecture)
+### Frontend
+- **HTML5** - Struktur
+- **CSS3** - Styling dengan custom variables
+- **JavaScript (Vanilla)** - Interaktivitas
+- **Bootstrap 5.3.3** - UI framework
+- **Bootstrap Icons** - Icon library
+- **Google Fonts (Inter)** - Typography
 
-Proyek ini mengikuti prinsip-prinsip Arsitektur Bersih untuk menciptakan pemisahan kekhawatiran (separation of concerns) dan membuat codebase lebih mudah dipelihara serta diuji. Kode diorganisir ke dalam lapisan-lapisan berikut:
+### Database
+- **PostgreSQL 13** - Relational database
 
-*   **Lapisan Domain:** Berisi logika bisnis inti dan entitas aplikasi. Ini direpresentasikan oleh model-model Django di file `products/models.py`.
-*   **Lapisan Aplikasi:** Berisi aturan bisnis spesifik aplikasi. Ini direpresentasikan oleh layanan dan kasus penggunaan. Dalam proyek ini, file `products/services.py` akan berisi logika untuk berinteraksi dengan API eksternal.
-*   **Lapisan Presentasi:** Bertanggung jawab untuk menyajikan data kepada pengguna dan menangani input pengguna. Ini direpresentasikan oleh tampilan (views) dan template Django di direktori `products/views.py` dan `products/templates/`.
-*   **Lapisan Infrastruktur:** Berisi detail implementasi layanan eksternal, seperti database dan API eksternal. Ini direpresentasikan oleh pengaturan Django di `fastprint_project/settings.py` dan perintah manajemen di `products/management/commands/populate_products.py`.
+### DevOps
+- **Docker** - Containerization
+- **Docker Compose** - Multi-container orchestration
 
-## Prasyarat (Prerequisites)
+##  Arsitektur Sistem
 
-*   **Docker & Docker Compose:** Pastikan Docker Desktop (Windows/Mac) atau Docker Engine (Linux) sudah terinstal dan berjalan.
-*   **Make (Opsional untuk Windows):** Pengguna Linux biasanya sudah memiliki `make`. Pengguna Windows bisa menggunakan WSL atau menjalankan perintah docker-compose secara manual.
+### Clean Architecture Layers
 
-## Instalasi & Menjalankan (Docker)
+```
+┌─────────────────────────────────────────┐
+│     Presentation Layer (Views)          │
+│  - product_list.html                    │
+│  - product_form.html                    │
+│  - views.py (HTTP handlers)             │
+├─────────────────────────────────────────┤
+│     Application Layer (Services)        │
+│  - services.py (Business logic)         │
+│  - serializers.py (Data validation)     │
+├─────────────────────────────────────────┤
+│     Domain Layer (Models)               │
+│  - models.py (Entities)                 │
+│    • Produk                             │
+│    • Kategori                           │
+│    • Status                             │
+├─────────────────────────────────────────┤
+│     Infrastructure Layer                │
+│  - Database (PostgreSQL)                │
+│  - External API integration             │
+│  - Management commands                  │
+└─────────────────────────────────────────┘
+```
 
-Proyek ini telah dikonfigurasi untuk berjalan sepenuhnya di dalam Docker container.
+### Database Schema
 
-### Linux / Mac (Menggunakan Makefile)
+**Tabel: Produk**
+- `id_produk` (PK) - Integer
+- `nama_produk` - String
+- `harga` - Decimal
+- `kategori` (FK) - Foreign Key ke Kategori
+- `status` (FK) - Foreign Key ke Status
 
-Ketik perintah berikut di terminal:
+**Tabel: Kategori**
+- `id_kategori` (PK) - Integer
+- `nama_kategori` - String
 
-1.  **Build dan Jalankan Container:**
-    ```bash
-    make build
-    make up
-    ```
+**Tabel: Status**
+- `id_status` (PK) - Integer
+- `nama_status` - String
 
-2.  **Jalankan Migrasi Database:**
-    ```bash
-    make migrate
-    ```
+##  Instalasi & Setup
 
-3.  **Populasi Data Awal:**
-    ```bash
-    make populate
-    ```
-    *Note: Username & Password API digenerate secara otomatis.*
+### Prasyarat
+- Docker Desktop (Windows/Mac) atau Docker Engine (Linux)
+- Docker Compose
+- Make (opsional untuk Linux/Mac)
 
-4.  **Akses Aplikasi:**
-    Buka browser dan kunjungi `http://localhost:8000`.
+### Linux / Mac (dengan Makefile)
 
-5.  **Hentikan Aplikasi:**
-    ```bash
-    make down
-    ```
+```bash
+# 1. Build container
+make build
 
-### Windows (Tanpa Make)
+# 2. Jalankan aplikasi
+make up
 
-Jika Anda tidak menggunakan WSL, jalankan perintah manual berikut melalui Command Prompt atau PowerShell:
+# 3. Migrasi database
+make migrate
 
-1.  **Build dan Jalankan:**
-    ```bash
-    docker-compose build
-    docker-compose up -d
-    ```
+# 4. Populasi data awal
+make populate
 
-2.  **Migrasi Database:**
-    ```bash
-    docker-compose exec web python manage.py migrate
-    ```
+# 5. Akses aplikasi
+# Buka browser: http://localhost:8001
+```
 
-3.  **Populasi Data:**
-    ```bash
-    docker-compose exec web python manage.py populate_products
-    ```
+**Perintah tambahan:**
+```bash
+make down      # Stop container
+make logs      # Lihat logs
+make shell     # Masuk ke shell container
+make restart   # Restart container
+```
 
-4.  **Akses Aplikasi:**
-    Buka `http://localhost:8000`.
+### Windows (tanpa Make)
 
-## Struktur Proyek & Clean Architecture
+```bash
+# 1. Build dan jalankan
+docker-compose build
+docker-compose up -d
 
-Proyek ini diorganisir dengan pendekatan Clean Architecture untuk menjaga kode tetap bersih, teruji, dan mudah dipelihara. Berikut adalah penjelasan struktur utamanya:
+# 2. Migrasi database
+docker-compose exec web python manage.py migrate
 
-*   **`products/models.py` (Domain Layer):**
-    Mendefinisikan struktur data (Entitas) seperti `Produk`, `Kategori`, dan `Status`. File ini bersih dari logika bisnis yang kompleks.
+# 3. Populasi data
+docker-compose exec web python manage.py populate_products
 
-*   **`products/services.py` (Service Layer - Baru):**
-    Menangani logika bisnis utama, khususnya interaksi dengan API eksternal. Service ini bertugas mengambil data, memvalidasi user/password dinamis, dan menyinkronkan data ke database lokal. Ini memisahkan logika dari View atau Command.
+# 4. Akses aplikasi
+# Buka browser: http://localhost:8001
+```
 
-*   **`products/views.py` (Presentation Layer):**
-    Bertanggung jawab hanya untuk menerima request HTTP dan mengembalikan response. View menggunakan Serializer untuk format data JSON (API) atau merender Template HTML untuk UI.
+**Perintah tambahan:**
+```bash
+docker-compose down                    # Stop container
+docker-compose logs -f web            # Lihat logs
+docker-compose exec web bash          # Masuk ke shell
+docker-compose restart web            # Restart
+```
 
-*   **`products/serializers.py` (Data Transfer Layer):**
-    Mengubah objek model menjadi format JSON dan sebaliknya (Serialization/Deserialization). Juga menangani validasi input form (misal: harga harus angka).
+##  API Endpoints
 
-*   **`products/management/commands/populate_products.py` (Infrastructure Layer):**
-    Interface command-line (CLI) yang berfungsi sebagai entry point untuk memicu proses sinkronisasi data. Command ini sekarang sangat sederhana karena logika utamanya telah dipindahkan ke `services.py`.
+### REST API
+- `GET /api/products/` - List semua produk dengan status "Bisa dijual"
+  - Response: JSON array of products
+  - Filter otomatis: hanya produk yang bisa dijual
 
-## Endpoint API
+### Web Pages
+- `GET /products/` - Halaman list produk (dengan filter & search)
+- `GET /products/create/` - Form tambah produk baru
+- `GET /products/<id>/update/` - Form edit produk
+- `POST /products/<id>/delete/` - Hapus produk
 
-*   `GET /api/products/`: Mengembalikan daftar produk yang memiliki status "bisa dijual".
+##  Desain UI
 
-## Fitur Baru (Modern UI)
+### Color Palette
+```css
+--primary: #7BA3C5        /* Soft Blue */
+--secondary: #E8D5C4      /* Warm Cream */
+--success: #81B29A        /* Mint Green */
+--danger: #E07A5F         /* Soft Terracotta */
+--background: #F8F9FA     /* Light Gray */
+```
 
-*   **Desain Modern:** Menggunakan CSS custom dengan variabel warna, glassmorphism, dan transisi halus.
-*   **Responsif:** Layout otomatis menyesuaikan diri (Tabel di Desktop, Kartu di Mobile).
-*   **Interaktif:** Konfirmasi hapus yang aman dan feedback visual (badges).
+### Design Principles
+1. **Minimalist**: Clean dan tidak berlebihan
+2. **Soft Colors**: Warna lembut untuk mata
+3. **Consistent Spacing**: Padding dan margin yang konsisten
+4. **Clear Hierarchy**: Typography yang jelas
+5. **Responsive First**: Mobile-friendly dari awal
+
+##  Struktur Proyek
+
+```
+fastprint/
+├── docker-compose.yml          # Docker orchestration
+├── Dockerfile                  # Container definition
+├── Makefile                    # Shortcut commands
+├── requirements.txt            # Python dependencies
+├── manage.py                   # Django CLI
+├── fastprint_project/          # Project settings
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+└── products/                   # Main app
+    ├── models.py              # Domain entities
+    ├── views.py               # HTTP handlers
+    ├── serializers.py         # Data validation
+    ├── services.py            # Business logic
+    ├── urls.py                # URL routing
+    ├── static/
+    │   └── products/
+    │       └── style.css      # Custom styles
+    ├── templates/
+    │   └── products/
+    │       ├── base.html      # Base template
+    │       ├── product_list.html
+    │       └── product_form.html
+    └── management/
+        └── commands/
+            └── populate_products.py
+```
+
+##  Konfigurasi
+
+### Environment Variables
+File `docker-compose.yml` sudah dikonfigurasi dengan:
+- `POSTGRES_DB=fastprint_db`
+- `POSTGRES_USER=fastprint_user`
+- `POSTGRES_PASSWORD=fastprint_password`
+- Port mapping: `8001:8000` (untuk menghindari konflik)
+
+### Django Settings
+- `DEBUG=True` (development)
+- `ALLOWED_HOSTS=['*']`
+- Database: PostgreSQL dengan pg8000
+- Static files: `/static/`
+- Media files: `/media/`
+
+##  Testing
+
+### Manual Testing Checklist
+- [ ] Create produk baru dengan validasi
+- [ ] Edit produk existing
+- [ ] Delete produk dengan konfirmasi
+- [ ] Filter by kategori
+- [ ] Filter by status
+- [ ] Search by nama produk
+- [ ] Reset filters
+- [ ] Responsive di mobile
+- [ ] Toast notifications muncul
+- [ ] Modal confirmations bekerja
+
+##  Troubleshooting
+
+### Port sudah digunakan
+```bash
+# Ubah port di docker-compose.yml
+ports:
+  - "8002:8000"  # Ganti 8001 ke 8002
+```
+
+### Database connection error
+```bash
+# Restart database container
+docker-compose restart db
+docker-compose restart web
+```
+
+### Static files tidak muncul
+```bash
+# Collect static files
+docker-compose exec web python manage.py collectstatic --noinput
+```
+
+### Template syntax error
+```bash
+# Pastikan spacing di template benar
+# Contoh: {% if form.kategori.value == k.pk %}
+# BUKAN: {% if form.kategori.value==k.pk %}
+```
+
+##  Catatan Penting
+
+1. **Port**: Aplikasi berjalan di `http://localhost:8001` (bukan 8000)
+2. **Auto-reload**: Django development server auto-reload saat file berubah
+3. **Data Persistence**: Data PostgreSQL tersimpan di Docker volume
+4. **API Credentials**: Username dan password API di-generate otomatis
+
+##  Developer
+
+- **Project**: FastPrint Product Management System
+- **Framework**: Django 4.2.1
+- **Architecture**: Clean Architecture
+- **UI/UX**: Modern, Responsive, User-Friendly
+
+##  License
+
+This project is created for recruitment test purposes.
+
+---
+
+**Warm Regards Ryan hanafi**
